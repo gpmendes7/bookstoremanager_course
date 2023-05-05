@@ -1,13 +1,16 @@
 package com.rodrigopeleias.bookstoremanager.publishers.entity;
 
 import com.rodrigopeleias.bookstoremanager.books.entity.Book;
+import com.rodrigopeleias.bookstoremanager.entity.Auditable;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
+@Data
 @Entity
-public class Publisher {
+public class Publisher extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
