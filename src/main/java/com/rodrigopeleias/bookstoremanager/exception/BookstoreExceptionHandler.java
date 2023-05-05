@@ -34,9 +34,9 @@ public class BookstoreExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatus status, WebRequest request) {
         List<String> errors = new ArrayList<>();
         exception.getBindingResult().getFieldErrors()
-                .forEach(fieldError -> errors.add("Field " + fieldError.getField().toUpperCase() + "" + fieldError.getDefaultMessage()));
+                .forEach(fieldError -> errors.add("Field " + fieldError.getField().toUpperCase() + " " + fieldError.getDefaultMessage()));
         exception.getBindingResult().getGlobalErrors()
-                .forEach(globalErrors -> errors.add("Object " + globalErrors.getObjectName() + "" + globalErrors.getDefaultMessage()));
+                .forEach(globalErrors -> errors.add("Object " + globalErrors.getObjectName() + " " + globalErrors.getDefaultMessage()));
         return buildResponseEntity(HttpStatus.BAD_REQUEST, "Informed argument(s) validation erros(s)", errors);
     }
 
