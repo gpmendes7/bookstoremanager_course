@@ -19,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,5 +86,27 @@ public class AuthorServiceTest {
         Mockito.when(authorRepository.findById(expectedFoundAuthorDTO.getId())).thenReturn(Optional.empty());
 
         Assertions.assertThrows(AuthorNotFoundException.class, ()-> authorService.findById(expectedFoundAuthorDTO.getId()));
+    }
+
+    @Test
+    void whenListAuthorIsCalledThenItShouldBeReturned() {
+        AuthorDTO expectedFoundAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+        Author expectedFoundAuthor = authorMapper.toModel(expectedFoundAuthorDTO);
+
+        Mockito.when(authorRepository.findAll()).thenReturn(Collections.singletonList(expectedFoundAuthor));
+
+        List<AuthorDTO> foundAuthorsDTO = authorService.findAll();
+
+        MatcherAssert.assertThat(foundAuthorsDTO.size(), Is.is(1));
+        MatcherAssert.assertThat(foundAuthorsDTO.get(0), Is.is(IsEqual.equalTo(expectedFoundAuthorDTO)));
+    }
+
+    @Test
+    void whenListAuthorsIsCalledThenAnEmptyListShouldBeReturned() {
+        Mockito.when(authorRepository.findAll()).thenReturn(Collections.EMPTY_LIST);
+
+        List<AuthorDTO> foundAuthorsDTO = authorService.findAll();
+
+        MatcherAssert.assertThat(foundAuthorsDTO.size(), Is.is(0));
     }
 }
