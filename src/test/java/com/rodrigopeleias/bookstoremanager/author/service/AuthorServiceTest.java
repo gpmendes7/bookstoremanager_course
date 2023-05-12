@@ -4,6 +4,7 @@ import com.rodrigopeleias.bookstoremanager.author.builder.AuthorDTOBuilder;
 import com.rodrigopeleias.bookstoremanager.author.dto.AuthorDTO;
 import com.rodrigopeleias.bookstoremanager.author.entity.Author;
 import com.rodrigopeleias.bookstoremanager.author.exception.AuthorAlreadyExistsException;
+import com.rodrigopeleias.bookstoremanager.author.exception.AuthorNotFoundException;
 import com.rodrigopeleias.bookstoremanager.author.mapper.AuthorMapper;
 import com.rodrigopeleias.bookstoremanager.author.repository.AuthorRepository;
 import org.hamcrest.MatcherAssert;
@@ -62,5 +63,26 @@ public class AuthorServiceTest {
         Mockito.when(authorRepository.findByName(expectedAuthorToCreateDTO.getName())).thenReturn(Optional.of(expectedCreatedAuthor));
 
         Assertions.assertThrows(AuthorAlreadyExistsException.class, ()-> authorService.create(expectedAuthorToCreateDTO));
+    }
+
+    @Test
+    void whenValidIdIsGivenThenAnAuthorShouldBeReturned() {
+        AuthorDTO expectedFoundAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+        Author expectedFoundAuthor = authorMapper.toModel(expectedFoundAuthorDTO);
+
+        Mockito.when(authorRepository.findById(expectedFoundAuthorDTO.getId())).thenReturn(Optional.of(expectedFoundAuthor));
+
+        AuthorDTO foundAuthorDTO = authorService.findById(expectedFoundAuthorDTO.getId());
+
+        MatcherAssert.assertThat(foundAuthorDTO, Is.is(IsEqual.equalTo(expectedFoundAuthorDTO)));
+    }
+
+    @Test
+    void whenInvalidIdIsGivenThenAnExceptionShouldBeThrown() {
+        AuthorDTO expectedFoundAuthorDTO = authorDTOBuilder.buildAuthorDTO();
+
+        Mockito.when(authorRepository.findById(expectedFoundAuthorDTO.getId())).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(AuthorNotFoundException.class, ()-> authorService.findById(expectedFoundAuthorDTO.getId()));
     }
 }
