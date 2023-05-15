@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PublisherService {
 
-    private final static PublisherMapper publisherMapper = PublisherMapper.INSTANCEE;
+    private final static PublisherMapper publisherMapper = PublisherMapper.INSTANCE;
 
     private PublisherRepository publisherRepository;
 
