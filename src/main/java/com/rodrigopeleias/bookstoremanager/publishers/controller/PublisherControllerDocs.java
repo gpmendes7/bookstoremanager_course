@@ -16,4 +16,11 @@ public interface PublisherControllerDocs {
     })
     PublisherDTO create(PublisherDTO publisherDTO);
 
+    @ApiOperation(value = "find publisher by id operation")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Success publisher found"),
+            @ApiResponse(code = 404, message = "Publisher not found error")
+    })
+    PublisherDTO findById(Long id);
+
 }
