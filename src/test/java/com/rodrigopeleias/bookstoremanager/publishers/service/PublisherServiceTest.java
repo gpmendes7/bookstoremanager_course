@@ -4,6 +4,7 @@ import com.rodrigopeleias.bookstoremanager.publishers.builder.PublisherDTOBuilde
 import com.rodrigopeleias.bookstoremanager.publishers.dto.PublisherDTO;
 import com.rodrigopeleias.bookstoremanager.publishers.entity.Publisher;
 import com.rodrigopeleias.bookstoremanager.publishers.exception.PublisherAlreadyExistsException;
+import com.rodrigopeleias.bookstoremanager.publishers.exception.PublisherNotFoundException;
 import com.rodrigopeleias.bookstoremanager.publishers.mappers.PublisherMapper;
 import com.rodrigopeleias.bookstoremanager.publishers.repository.PublisherRepository;
 import org.hamcrest.MatcherAssert;
@@ -60,5 +61,29 @@ public class PublisherServiceTest {
                 .thenReturn(Optional.of(expectedPublisherDuplicated));
 
         Assertions.assertThrows(PublisherAlreadyExistsException.class, () -> publisherService.create(expectedPublisherToCreateDTO));
+    }
+
+    @Test
+    void whenValidIdIsGivenThenAPublisherShouldBeReturned() {
+        PublisherDTO expectedPublisherFoundDTO = publisherDTOBuilder.buildPublisherDTO();
+        Publisher expectedPublisherFound = publisherMapper.toModel(expectedPublisherFoundDTO);
+        var expectedPublisherFoundId = expectedPublisherFoundDTO.getId();
+
+        Mockito.when(publisherRepository.findById(expectedPublisherFoundId)).thenReturn(Optional.of(expectedPublisherFound));
+
+        PublisherDTO foundPublisherDTO = publisherService.findById(expectedPublisherFoundId);
+
+        MatcherAssert.assertThat(foundPublisherDTO, Matchers.is(Matchers.equalTo(expectedPublisherFoundDTO)));
+    }
+
+    @Test
+    void whenInvalidIdIsGivenThenAnExceptionShouldBeThrown() {
+        PublisherDTO expectedPublisherFoundDTO = publisherDTOBuilder.buildPublisherDTO();
+
+        var expectedPublisherFoundId = expectedPublisherFoundDTO.getId();
+
+        Mockito.when(publisherRepository.findById(expectedPublisherFoundId)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(PublisherNotFoundException.class, () -> publisherService.findById(expectedPublisherFoundId));
     }
 }
