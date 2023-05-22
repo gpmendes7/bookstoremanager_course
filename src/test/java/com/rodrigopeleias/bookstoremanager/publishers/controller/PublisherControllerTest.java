@@ -20,6 +20,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
+import java.util.Collections;
+
 @ExtendWith(MockitoExtension.class)
 public class PublisherControllerTest {
 
@@ -83,6 +85,20 @@ public class PublisherControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(expectedCreatedPublisherDTOId.intValue())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(expectedCreatedPublisherDTO.getName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code", Matchers.is(expectedCreatedPublisherDTO.getCode())));
+    }
+
+    @Test
+    void whenGETListIsCalledThenOkStatusShouldBeInformed() throws Exception {
+        PublisherDTO expectedCreatedPublisherDTO = publisherDTOBuilder.buildPublisherDTO();
+
+        Mockito.when(publisherService.findAll()).thenReturn(Collections.singletonList(expectedCreatedPublisherDTO));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(PUBLISHERS_API_URL_PATH)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(expectedCreatedPublisherDTO.getId().intValue())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is(expectedCreatedPublisherDTO.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].code", Matchers.is(expectedCreatedPublisherDTO.getCode())));
     }
 
 }

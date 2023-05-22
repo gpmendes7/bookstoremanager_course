@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import java.util.List;
+
 @Api("Publishers management")
 public interface PublisherControllerDocs {
 
@@ -16,11 +18,17 @@ public interface PublisherControllerDocs {
     })
     PublisherDTO create(PublisherDTO publisherDTO);
 
-    @ApiOperation(value = "find publisher by id operation")
+    @ApiOperation(value = "Find publisher by id operation")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Success publisher found"),
             @ApiResponse(code = 404, message = "Publisher not found error")
     })
     PublisherDTO findById(Long id);
 
+
+    @ApiOperation(value = "List all registered publishers")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Return all registered publishers")
+    })
+    List<PublisherDTO> findAll();
 }
