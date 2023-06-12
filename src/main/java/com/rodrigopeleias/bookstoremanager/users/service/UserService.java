@@ -26,7 +26,7 @@ public class UserService {
     }
 
     public MessageDTO create(UserDTO userToCreateDTO) {
-        verifyAndGetIfExists(userToCreateDTO.getEmail(), userToCreateDTO.getUsername());
+        verifyIfExists(userToCreateDTO.getEmail(), userToCreateDTO.getUsername());
 
         User userToCreate = userMapper.toModel(userToCreateDTO);
         User createdUser = userRepository.save(userToCreate);
@@ -55,7 +55,7 @@ public class UserService {
                         .orElseThrow(() -> new UserNotFoundException(id));
     }
 
-    private void verifyAndGetIfExists(String email, String username) {
+    private void verifyIfExists(String email, String username) {
         Optional<User> foundUser = userRepository.findByEmailOrUsername(email, username);
         if (foundUser.isPresent()) {
             throw new UserAlreadyExistsException(email, username);
