@@ -7,6 +7,7 @@ import com.rodrigopeleias.bookstoremanager.users.exception.UserAlreadyExistsExce
 import com.rodrigopeleias.bookstoremanager.users.exception.UserNotFoundException;
 import com.rodrigopeleias.bookstoremanager.users.mapper.UserMapper;
 import com.rodrigopeleias.bookstoremanager.users.repository.UserRepository;
+import com.rodrigopeleias.bookstoremanager.users.utils.MessageDTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,16 +31,27 @@ public class UserService {
         User userToCreate = userMapper.toModel(userToCreateDTO);
         User createdUser = userRepository.save(userToCreate);
 
-        return creationMessage(createdUser);
+        return MessageDTOUtils.creationMessage(createdUser);
+    }
+
+    public MessageDTO update(Long id, UserDTO userToUpdateDTO) {
+        User foundUser = verifyAndGetIfExists(id);
+
+        userToUpdateDTO.setId(foundUser.getId());
+        User userToUpdate = userMapper.toModel(userToUpdateDTO);
+        userToUpdate.setCreatedDate(foundUser.getCreatedDate());
+
+        User updatedUser = userRepository.save(userToUpdate);
+        return MessageDTOUtils.updatedMessage(updatedUser);
     }
 
     public void delete(Long id) {
-        verifyIfExists(id);
+        verifyAndGetIfExists(id);
         userRepository.deleteById(id);
     }
 
-    private void verifyIfExists(Long id) {
-        userRepository.findById(id)
+    private User verifyAndGetIfExists(Long id) {
+        return userRepository.findById(id)
                         .orElseThrow(() -> new UserNotFoundException(id));
     }
 
@@ -50,13 +62,4 @@ public class UserService {
         }
     }
 
-    private static MessageDTO creationMessage(User createdUser) {
-        String createdUserUsername = createdUser.getUsername();
-        Long createdId = createdUser.getId();
-        String createdUserMessage = String.format("User %s with ID %d successfully created", createdUserUsername, createdId);
-        return MessageDTO.builder()
-                .message(
-                        createdUserMessage)
-                .build();
-    }
 }

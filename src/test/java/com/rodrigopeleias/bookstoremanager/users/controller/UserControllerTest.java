@@ -61,6 +61,24 @@ public class UserControllerTest {
     }
 
     @Test
+    void whenPUTIsCalledThenOkStatusShouldBeReturned() throws Exception {
+        UserDTO expectedUserUpdateDTO = userDTOBuilder.buildUserDTO();
+        expectedUserUpdateDTO.setUsername("RodrigoUpdate");
+        String expectedUpdateMessage = "User RodrigoUpdate with ID 1 successfully updated";
+        MessageDTO expectedUpdateMessageDTO = MessageDTO.builder().message(expectedUpdateMessage).build();
+        var expectedUserToUpdateId = expectedUserUpdateDTO.getId();
+
+        Mockito.when(userService.update(expectedUserToUpdateId, expectedUserUpdateDTO)).thenReturn(expectedUpdateMessageDTO);
+
+        mockMvc.perform(MockMvcRequestBuilders.put(USERS_API_URL_PATH + "/" + expectedUserToUpdateId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(JsonConversionUtils.asJsonString(expectedUserUpdateDTO)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(expectedUpdateMessage)));
+
+    }
+
+    @Test
     void whenPOSTIsCalledWithoutRequiredFieldThenBadRequestStatusShouldBeReturned() throws Exception {
         UserDTO expectedUserToCreateDTO = userDTOBuilder.buildUserDTO();
         expectedUserToCreateDTO.setUsername(null);
