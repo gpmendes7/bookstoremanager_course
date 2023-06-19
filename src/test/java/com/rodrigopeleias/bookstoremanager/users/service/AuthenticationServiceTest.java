@@ -1,5 +1,6 @@
 package com.rodrigopeleias.bookstoremanager.users.service;
 
+import com.rodrigopeleias.bookstoremanager.users.builder.JwtRequestBuilder;
 import com.rodrigopeleias.bookstoremanager.users.builder.UserDTOBuilder;
 import com.rodrigopeleias.bookstoremanager.users.dto.UserDTO;
 import com.rodrigopeleias.bookstoremanager.users.entity.User;
@@ -34,9 +35,31 @@ public class AuthenticationServiceTest {
 
     private UserDTOBuilder userDTOBuilder;
 
+    @Mock
+    private JwtTokenManger jwtTokenManager;
+
+    private JwtRequestBuilder jwtRequestBuilder;
+
     @BeforeEach
     void setUp() {
         userDTOBuilder = UserDTOBuilder.builder().build();
+        jwtRequestBuilder = JwtRequestBuilder.builder().build();
+    }
+
+    @Test
+    void whenUsernameAndPasswordIsInformedThenATokenShouldBeGenerated() {
+        UserDTO expectedFoundUserDTO = userDTOBuilder.buildUserDTO();
+        User expectedFoundUser = userMapper.toModel(expectedFoundUserDTO);
+        SimpleGrantedAuthority expectedUserRole = new SimpleGrantedAuthority("ROLE_" + expectedFoundUserDTO.getRole().getDescription());
+        String expectedUsername = expectedFoundUserDTO.getUsername();
+
+        Mockito.when(userRepository.findByUsername(expectedUsername)).thenReturn(Optional.of(expectedFoundUser));
+
+        UserDetails userDetails = authenticationService.loadUserByUsername(expectedUsername);
+
+        MatcherAssert.assertThat(userDetails.getUsername(), Matchers.is(Matchers.equalTo(expectedFoundUser.getUsername())));
+        MatcherAssert.assertThat(userDetails.getPassword(), Matchers.is(Matchers.equalTo(expectedFoundUser.getPassword())));
+        Assertions.assertTrue(userDetails.getAuthorities().contains(expectedUserRole));
     }
 
     @Test

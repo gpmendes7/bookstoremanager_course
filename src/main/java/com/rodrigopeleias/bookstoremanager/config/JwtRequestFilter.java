@@ -45,11 +45,11 @@ public class JwtRequestFilter  extends OncePerRequestFilter {
     }
 
     private boolean isTokenPresent(String requestTokenHeader) {
-        return requestTokenHeader != null && requestTokenHeader.startsWith("Bearer");
+        return requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ");
     }
 
     private boolean isUsernameInContext(String username) {
-        return username != null && SecurityContextHolder.getContext().getAuthentication() == null;
+        return !username.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null;
     }
 
     private void addUserNameInContext(HttpServletRequest request, String username, String jwtToken) {
